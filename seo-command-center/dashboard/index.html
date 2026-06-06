@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SEO Command Center — Live Cockpit</title>
+<style>
+:root{--ink:#0f0f12;--card:#1a1a1f;--line:#2a2a30;--paper:#f8f7f4;--mute:#a0a0a8;--red:#ff4d4d;--amber:#f59e0b;--gray:#6b7280}
+*{box-sizing:border-box}body{margin:0;background:var(--ink);color:var(--paper);font-family:'Inter', system-ui, -apple-system, sans-serif;letter-spacing:-0.01em}
+header{padding:20px 28px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+h1{font-size:18px;margin:0;font-weight:600;display:flex;align-items:center}h1 .dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--red);margin-right:12px;animation:p 1.6s infinite}
+@keyframes p{0%,100%{opacity:1}50%{opacity:.4}}
+.pill{font-size:12px;color:var(--mute);background:var(--card);border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-weight:500}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;padding:24px}@media(max-width:820px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;transition:border 0.2s ease}
+.card h2{font-size:11px;text-transform:uppercase;letter-spacing:.15em;color:var(--mute);margin:0 0 16px;font-weight:700}
+.k{display:flex;gap:24px;flex-wrap:wrap;align-items:baseline}.k div{font-size:13px;color:var(--mute)}
+.k b{display:block;font-size:32px;color:var(--paper);font-weight:700;line-height:1}
+.progress-wrap{margin-bottom:24px}
+.progress-bar-bg{background:var(--line);height:8px;border-radius:4px;overflow:hidden;margin-top:8px}
+.progress-bar-fill{background:var(--red);height:100%;width:0%;transition:width 0.4s cubic-bezier(0.4,0,0.2,1)}
+.badge-row{display:flex;gap:8px;margin-top:12px}
+.badge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;text-transform:uppercase;letter-spacing:.05em}
+.badge.high{background:var(--red);color:#fff}.badge.medium{background:var(--amber);color:#000}.badge.low{background:var(--gray);color:#fff}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line)}
+th{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);font-weight:600}
+.sev{font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;text-transform:uppercase}.sev.high{background:var(--red);color:#fff}.sev.medium{background:var(--amber);color:#000}.sev.low{background:var(--gray);color:#fff}
+#log{max-height:320px;overflow:auto;font-size:13px;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
+#log div{margin:6px 0;color:var(--mute);border-left:2px solid var(--line);padding-left:12px}
+.empty{color:var(--mute);font-size:13px;font-style:italic}
+</style></head><body>
+<header><h1><span class="dot"></span>SEO Command Center <span class="pill" id="meta">idle</span></h1>
+<div class="pill" id="urls">0 URLs</div></header>
+<div class="grid">
+ <div class="main-col">
+  <div class="card">
+   <div class="progress-wrap">
+    <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:600">
+     <span>Audit Progress</span>
+     <span id="progress-text">0 / 18 Issues Detected</span>
+    </div>
+    <div class="progress-bar-bg"><div id="progress-fill" class="progress-bar-fill"></div></div>
+    <div class="badge-row">
+     <span class="badge high">High: <span id="b-high">0</span></span>
+     <span class="badge medium">Medium: <span id="b-med">0</span></span>
+     <span class="badge low">Low: <span id="b-low">0</span></span>
+    </div>
+   </div>
+  </div>
+  <div class="card" style="margin-top:20px"><h2>Issues found (live)</h2>
+   <div style="overflow-x:auto"><table id="tbl"><thead><tr><th>Severity</th><th>Issue</th><th>URLs</th></tr></thead>
+   <tbody id="tbody"><tr><td colspan="3" class="empty">Waiting for the audit to run…</td></tr></tbody>></table></div></div>
+ </div>
+ <div class="side-col">
+  <div class="card"><h2>Run log</h2><div id="log"><div class="empty">Pipeline steps stream here.</div></div></div>
+  <div class="card" style="margin-top:20px"><h2>Deliverable</h2><div id="export" class="empty">report.html will be ready when the run finishes.</div></div>
+ </div>
+</div>
+<script src="/app.js"></script></body></html>
