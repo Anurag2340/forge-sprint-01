@@ -99,12 +99,13 @@ def detect(rows: list[dict]) -> list[dict]:
         [r["Address"] for r in idx200 if not (r.get("H1-1", "") or "").strip()],
         "Pages missing an H1 tag.")
 
-    by_h1 = defaultdict(list)
+    # Bug 2 Fix: Duplicate H1 (strictly filter empty before counting)
+    h1_counts = defaultdict(list)
     for r in idx200:
-        h = (r.get("H1-1", "") or "").strip()
-        if h:
-            by_h1[h].append(r["Address"])
-    dup_h1 = [u for urls in by_h1.values() if len(urls) > 1 for u in urls]
+        h1 = (r.get("H1-1", "") or "").strip()
+        if h1:
+            h1_counts[h1].append(r["Address"])
+    dup_h1 = [url for urls in h1_counts.values() if len(urls) > 1 for url in urls]
     add("duplicate_h1", "Low", dup_h1, "Pages sharing an identical H1.")
 
     # --- Response codes ---
@@ -118,8 +119,9 @@ def detect(rows: list[dict]) -> list[dict]:
         [r["Address"] for r in rows if 300 <= _int(r.get("Status Code")) <= 399],
         "URLs that redirect (3xx).")
 
-    redirects = {r["Address"]: r.get("Redirect URL") for r in rows if 300 <= _int(r.get("Status Code")) <= 399}
-    chain = [r["Address"] for r in rows if _int(r.get("Status Code")) in [300,301,302,307,308] and any(rr.get("Status Code") in [300,301,302,307,308] for rr in rows if rr.get("Redirect URL") == r.get("Address"))]
+    # Bug 1 Fix: Redirect Chain (URL A -> URL B, and URL B also redirects)
+    redirection_map = {r["Address"]: r.get("Redirect URL") for r in rows if 300 <= _int(r.get("Status Code")) <= 399}
+    chain = [url for url, target in redirection_map.items() if target in redirection_map]
     add("redirect_chain", "High", chain, "URLs that are part of a redirect chain.")
 
     # --- Orphan pages ---
@@ -128,8 +130,9 @@ def detect(rows: list[dict]) -> list[dict]:
         "Indexable pages with zero internal links in.")
 
     # --- Other ---
+    # Bug 3 Fix: Thin Content (only HTML)
     add("thin_content", "Low",
-        [r["Address"] for r in idx200 if _int(r.get("Word Count")) < 200],
+        [r["Address"] for r in idx200 if is_html(r) and _int(r.get("Word Count")) < 200],
         "Indexable pages with very little content.")
 
     add("non_indexable_but_linked", "Medium",
